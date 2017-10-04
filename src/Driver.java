@@ -25,10 +25,13 @@ class Driver {
         System.out.println("Building Suffix Tree...");
         SuffixTree suffixTree = new SuffixTree();
 
+        long startTime = System.nanoTime();
         // Add each document into suffix tree
         for (Document document : documents) {
             suffixTree.add(document);
         }
+        long endTime = System.nanoTime();
+        System.out.println("Built! took: "+(endTime - startTime)/1000000 + " ms");
 
         String query = "lion";
 
