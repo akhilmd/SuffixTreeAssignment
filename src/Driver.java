@@ -31,20 +31,34 @@ class Driver {
             suffixTree.add(document);
         }
         long endTime = System.nanoTime();
-        System.out.println("Built! took: "+(endTime - startTime)/1000000 + " ms");
+        System.out.println("Built! took: " + (endTime - startTime) / 1000000 + " ms");
 
-        String query = "lion";
+        String query = "charger";
+        Result result = null;
 
         // Query the suffix tree
-        System.out.println("Searching for \"" + query + "\"...");
-        List<Result> results = suffixTree.findAll(query);
+        System.out.println("\nSearching for \"" + query + "\"...");
+        result = suffixTree.findAll(query, false);
 
         // Print no of matches
-        System.out.println("Matches Found: " + results.size());
+        System.out.println("Matches Found: " + result.size());
 
         // Print each match
-        for (Result result : results) {
-            System.out.println(result);
-        }
+        System.out.println(result);
+        // System.out.println(result.getMatchedLength()+"\n"+result.size());
+
+         query = "!!!chargers as!d";
+
+        // Query the suffix tree
+        System.out.println("searching for First Longest Substring of \"" + query + "\"...");
+        result = suffixTree.findFirstLongestSubstring(query);
+
+        // // Print no of matches
+        // System.out.println("Matches Found: " + results.size());
+        //
+        // // Print each match
+        // for (Result result : results) {
+        // System.out.println(result);
+        // }
     }
 }

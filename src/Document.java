@@ -1,10 +1,12 @@
 public class Document {
     private String title;
     private String text;
+    private int index = 0;
 
-    public Document(String title, String text) {
+    public Document(String title, String text, int index) {
         this.title = title;
         this.text = text;
+        this.index = index;
     }
 
     public String getTitle() {
@@ -25,7 +27,7 @@ public class Document {
 
     @Override
     public String toString() {
-        String op = "Title: [" + this.title + "], Text: [" + this.text.substring(0, 20 > this.text.length()? this.text.length() : 10) + "...]";
+        String op = "DOCUMENT++Title: [" + this.title + "], Text: [" + this.text.substring(0, 20 > this.text.length()? this.text.length() : 10) + "...]++";
         return op;
     }
 
@@ -36,6 +38,23 @@ public class Document {
         String op = "Title: [" + this.title + "] \n Text: [" + this.text.substring(before, after)+ "]";
         return op;
     }
-    
-    
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.index;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Document other = (Document) obj;
+        return this.index == other.getIndex();
+    }
 }

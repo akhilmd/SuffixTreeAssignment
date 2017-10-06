@@ -1,7 +1,13 @@
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class SuffixTreeNode {
     protected int letterDepth = -1;
     protected Substring substring = null;
     protected SuffixTreeNode[] children = null;
+    protected Map<Document, SuffixTreeLeafNode> firstOccurrencesMap = null;
 
     public SuffixTreeNode (int letterDepth, Substring substringRange) {
         this.letterDepth = letterDepth;
@@ -9,6 +15,7 @@ public class SuffixTreeNode {
 
         // All will be null
         this.children = new SuffixTreeNode[128];
+        this.firstOccurrencesMap = new HashMap<Document, SuffixTreeLeafNode>();
     }
 
     public int getLetterDepth() {
@@ -41,6 +48,33 @@ public class SuffixTreeNode {
 
     public SuffixTreeNode getChild(byte ind) {
         return this.children[ind];
+    }
+
+    public void addFirstOccurrence(Document document, SuffixTreeLeafNode leafNode) {
+        if (leafNode == null) {
+            return;
+        }
+
+        SuffixTreeLeafNode firstOccurrence = this.firstOccurrencesMap.get(document);
+        if (firstOccurrence == null) {
+            // Substring.shouldRepr = true;
+            // System.out.println(this.getSubstring()+" #### "+document.getIndex()+" ====
+            // "+leafNode.getSuffixNumberMap());
+            // Substring.shouldRepr = false;
+            this.firstOccurrencesMap.put(document, leafNode);
+        }
+    }
+
+    public SuffixTreeLeafNode getFirstOccurrence(Document document) {
+        return this.firstOccurrencesMap.get(document);
+    }
+
+    public Map<Document, SuffixTreeLeafNode> getFirstOccurrencesMap() {
+        return firstOccurrencesMap;
+    }
+
+    public void setFirstOccurrencesMap(Map<Document, SuffixTreeLeafNode> firstOccurrencesMap) {
+        this.firstOccurrencesMap = firstOccurrencesMap;
     }
 
     @Override

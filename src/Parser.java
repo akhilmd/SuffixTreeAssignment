@@ -37,11 +37,11 @@ public class Parser {
                     
                     text += " " + line;
                     //System.out.println("["+line+"]");
-                    ++i;
                 }
                 //System.out.println("XXXXXXXXXXXXXXXXXXXXXXXX");
                 // System.out.println(new Document(title, text.trim()));
-                documents.add(new Document(title, text.trim()));
+                documents.add(new Document(title, text.trim(), i));
+                ++i;
             }
         }
         return documents;

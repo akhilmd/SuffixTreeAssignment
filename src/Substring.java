@@ -47,9 +47,9 @@ public class Substring {
         }
         String repr = "";
         if (shouldRepr) {
-            repr =  "= \""+op+"\"";
+            repr =  " = \""+op+"\"";
         }
-        return "[(" + this.begin + ", " + this.end + ") "+repr+"]";
+        return "[(" + this.begin + ", " + this.end + ")"+repr+"]";
     }
 
     public byte[] getText() {
