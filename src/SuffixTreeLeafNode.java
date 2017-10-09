@@ -1,9 +1,10 @@
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SuffixTreeLeafNode extends SuffixTreeNode {
-    java.util.Map<Document, Integer> suffixNumberMap = null;
+    Map<Document, Integer> suffixNumberMap = null;
     
     public SuffixTreeLeafNode (int letterDepth, Substring substring) {
         super(letterDepth, substring);
@@ -18,11 +19,11 @@ public class SuffixTreeLeafNode extends SuffixTreeNode {
         return suffixNumberMap.get(document);
     }
 
-    public java.util.Map<Document, Integer> getSuffixNumberMap() {
+    public Map<Document, Integer> getSuffixNumberMap() {
         return suffixNumberMap;
     }
 
-    public void setSuffixNumberMap(java.util.Map<Document, Integer> suffixNumberMap) {
+    public void setSuffixNumberMap(Map<Document, Integer> suffixNumberMap) {
         this.suffixNumberMap = suffixNumberMap;
     }
 

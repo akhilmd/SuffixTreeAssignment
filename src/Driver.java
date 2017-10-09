@@ -5,6 +5,10 @@ import java.util.List;
 
 class Driver {
     public static void main(String args[]) throws IOException {
+//        for (int i=0;i<1000000000;++i ) {
+//            System.out.printf("\b%s", spinnerText.charAt(i%spinnerText.length()));
+//        }
+        
         // String pathStr = args[0];
         String pathStr = "./data/AesopTales.txt";
         // String pathStr = "./data/CustomInput.txt";
@@ -28,11 +32,12 @@ class Driver {
         long startTime = System.nanoTime();
         // Add each document into suffix tree
         for (Document document : documents) {
+            //System.out.println(document);
             suffixTree.add(document);
         }
         long endTime = System.nanoTime();
         System.out.println("Built! took: " + (endTime - startTime) / 1000000 + " ms");
-
+        
         String query = "charger";
         Result result = null;
 
@@ -44,13 +49,13 @@ class Driver {
         System.out.println("Matches Found: " + result.size());
 
         // Print each match
-        System.out.println(result);
+        System.out.println(result+"\n");
         // System.out.println(result.getMatchedLength()+"\n"+result.size());
 
          query = "!!!chargers as!d";
 
         // Query the suffix tree
-        System.out.println("searching for First Longest Substring of \"" + query + "\"...");
+        System.out.println("Searching for First Longest Substring of \"" + query + "\"...");
         result = suffixTree.findFirstLongestSubstring(query);
 
         // // Print no of matches

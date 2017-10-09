@@ -60,6 +60,7 @@ public class Result {
 
             op += prefix + document.getText().substring(start, end) + suffix + "]\n";
         }
+        op = op.substring(0, op.length() - 1);
         return op;
     }
 }

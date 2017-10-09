@@ -1,14 +1,20 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class SuffixTree {
     private SuffixTreeNode root = null;
+    List<Document> documents = null;
     // private byte[] text = null;
 
     public SuffixTree () {
         root = new SuffixTreeNode(0, new Substring(0, 0, null));
+        this.documents = new ArrayList<Document>();
     }
 
     public void add(Document document) {
@@ -26,10 +32,18 @@ public class SuffixTree {
 
             this.insert(root, substring, i, document);
         }
+        documents.add(document);
         // System.out.println("Pre-order traversal of built tree:");
-        // traverse(root, true);
+        //traverse(root, true);
         // System.out.println("Search for \"a\":");
         // findAll("a");
+//        int c = 0;
+//        for (SuffixTreeNode child : root.getChildren()) {
+//            if (child != null) {
+//                c++;
+//            }
+//        }
+//        System.out.println(c);
     }
 
     private SuffixTreeLeafNode insert(SuffixTreeNode node, Substring substring, int suffixNumber, Document document) {
@@ -110,10 +124,11 @@ public class SuffixTree {
     // For Debug
     private void traverse(SuffixTreeNode node, boolean printAll) {
         if (node == null) return;
+        Substring.shouldRepr=true;
         if (printAll || (!printAll && node instanceof SuffixTreeLeafNode)) {
             System.out.println(node);
         }
-
+        Substring.shouldRepr=false;
         for (int i = 0; i < node.getChildren().length; ++i) {
             traverse(node.getChild((byte)i), printAll);
         }
@@ -187,33 +202,162 @@ public class SuffixTree {
         result.setMatchedLength(j);
         return result;
     }
-
-    public Result findFirstLongestSubstring(String query) {
+    
+    public Result findOne(String query, Document document) {
+        // System.out.println("findAll:"+query);
+        Result result = new Result(query.length());
+        byte[] bytesQuery = query.getBytes();
+        SuffixTreeNode child = root.getChild(bytesQuery[0]);
+        int i = 0, j = 0;
+        while(child != null) {
+            // System.out.println("child = " + child);
+            byte[] text = child.getSubstring().getText();
+            for (
+                i = child.getSubstring().getBegin();
+                i <= child.getSubstring().getEnd() && j < bytesQuery.length;
+                ++i, ++j) {
+                if (text[i] != bytesQuery[j]) {
+                    result.setMatchedLength(j);
+                    // System.out.println((char)text[i]+" != " + (char)bytesQuery[j]);
+                    return result;
+                }
+            }
+            result.setMatchedLength(j);
+            if (i > child.getSubstring().getEnd() && j < bytesQuery.length) {
+                child = child.getChild(bytesQuery[j]);
+            } else if (i <= child.getSubstring().getEnd() && j >= bytesQuery.length) {
+                // System.out.println("child's first occ map:"+child.getFirstOccurrencesMap());
+//                Substring.shouldRepr=true;
+                for (Map.Entry<Document,SuffixTreeLeafNode> entry : child.getFirstOccurrencesMap().entrySet()) {
+                    if (document.equals(entry.getKey())) {
+                        result.add(entry.getKey(), entry.getValue().getSuffixNumber(entry.getKey()));
+                        return result;
+                    }
+                    // System.out.println(entry.getKey().getIndex()+" ====== "+entry.getValue().getSuffixNumber(entry.getKey()));
+                }
+//                Substring.shouldRepr=false;
+                return result;
+            }
+        }
+        result.setMatchedLength(j);
+        return result;
+    }
+    
+    public Map<Document, String> findAll_2(String query, Map<Document, String> longestSubstringMap) {
+//        System.out.println(query);
+        // System.out.println("findAll:"+query);
+        Result result = new Result(query.length());
+        byte[] bytesQuery = query.getBytes();
+        SuffixTreeNode child = root.getChild(bytesQuery[0]);
+        int i = 0, j = 0;
+        while(child != null) {
+//            System.out.println("child = " + child);
+//            System.out.println(query.substring(j));
+            byte[] text = child.getSubstring().getText();
+            for (
+                i = child.getSubstring().getBegin();
+                i <= child.getSubstring().getEnd() && j < bytesQuery.length;
+                ++i, ++j) {
+                if (text[i] != bytesQuery[j]) {
+                    result.setMatchedLength(j);
+//                    System.out.println((char) text[i] + " != " + (char) bytesQuery[j] + "::::"+query.substring(0,j));
+                    List<SuffixTreeLeafNode> descendants = getDescendantLeafNodes(child);
+                    for (SuffixTreeLeafNode descendant: descendants) {
+                        for (Map.Entry<Document, Integer> entry : descendant.getSuffixNumberMap().entrySet()) {
+                            String currString = longestSubstringMap.get(entry.getKey());
+//                            System.out.println(entry.getKey().getIndex()+": "+query.substring(0,j) + " [VS] " + currString);
+                            if (j > currString.length()) {
+                                longestSubstringMap.put(entry.getKey(), query.substring(0,j));
+                            }
+//                            System.out.println(longestSubstringMap);
+                            return longestSubstringMap;
+                        }
+                    }
+                }
+            }
+            
+            result.setMatchedLength(j);
+            if (i > child.getSubstring().getEnd() && j < bytesQuery.length) {
+                List<SuffixTreeLeafNode> descendants = getDescendantLeafNodes(child);
+//                System.out.println(descendants);
+                for (SuffixTreeLeafNode descendant: descendants) {
+                    for (Map.Entry<Document, Integer> entry : descendant.getSuffixNumberMap().entrySet()) {
+                        String currString = longestSubstringMap.get(entry.getKey());
+//                        System.out.println(entry.getKey().getIndex()+": "+query.substring(0,j) + " [VS] " + currString);
+                        if (j > currString.length()) {
+                            longestSubstringMap.put(entry.getKey(), query.substring(0,j));
+                        }
+//                        System.out.println(longestSubstringMap);
+                    }
+                }
+//                System.out.println("going to child: "+(char)bytesQuery[j]);
+                child = child.getChild(bytesQuery[j]);
+            } else if (i <= child.getSubstring().getEnd() && j >= bytesQuery.length) {
+                List<SuffixTreeLeafNode> descendants = getDescendantLeafNodes(child);
+//                System.out.println(descendants);
+                for (SuffixTreeLeafNode descendant: descendants) {
+                    for (Map.Entry<Document, Integer> entry : descendant.getSuffixNumberMap().entrySet()) {
+                        String currString = longestSubstringMap.get(entry.getKey());
+//                        System.out.println(entry.getKey().getIndex()+": "+query.substring(0,j) + " [VS] " + currString);
+                        if (j > currString.length()) {
+                            longestSubstringMap.put(entry.getKey(), query.substring(0,j));
+                        }
+//                        System.out.println(longestSubstringMap);
+                    }
+                }
+//                System.out.println("END!");
+//                System.out.println(longestSubstringMap);
+                return longestSubstringMap;
+            }
+        }
+//        System.out.println(longestSubstringMap);
+        result.setMatchedLength(j);
+        return longestSubstringMap;
+    }
+    
+    public Result findFirstLongestSubstring(String query) throws IOException {
         Substring max = new Substring(0, 0, null);
         byte[] bytesQuery = query.getBytes();
         Substring.shouldRepr = true;
 
-        for (int i = 0 ; i < query.length(); ++i) {
+        InputStreamReader in = new InputStreamReader(System.in);
+        BufferedReader r = new BufferedReader(in);
+        
+        Map<Document, String> longestSubstringMap = new HashMap<Document, String>();
+        for (Document d : this.documents) {
+            longestSubstringMap.put(d, "");
+        }
+         for (int i = 0 ; i < query.length(); ++i) {
+//        for (int i = 0 ; i < 2; ++i) {
             String suffix = query.substring(i, query.length());
-            // System.out.println(suffix);
             // find longest prefix that matches of substring
-            Result result = this.findAll(suffix, false);
+            longestSubstringMap = this.findAll_2(suffix, longestSubstringMap);
+            // System.out.println(longestSubstringMap);
             // System.out.println(i+":"+result.size()+", "+result.getMatchedLength());
-            Substring matched = null;
-            matched = new Substring(i, i + result.getMatchedLength() - 1, bytesQuery);
-            // System.out.println(max+","+matched);
-
-            if (matched.getLength() >= max.getLength()) {
-                max = matched;
-            } else {
-                break;
-            }
+            // Substring matched = new Substring(i, i + result.getMatchedLength() - 1, bytesQuery);
+            // System.out.println(result.getMatchedLength()+": matched: "+matched);
+            // System.out.println(result.size());
+            // System.out.println(result);
+            // r.readLine();
+            
+            // if (matched.getLength() >= max.getLength()) {
+            // max = matched;
+            // } else {
+            // break;
+            // }
         }
 
-        System.out.println("largest substring found in GST:" + max);
-        Substring.shouldRepr = false;
-        Result result = this.findAll(new String(Arrays.copyOfRange(max.getText(), max.getBegin(), max.getEnd()+1)), true);
-        System.out.println(result);
+         
+         for (Document d : this.documents) {
+             Result resultForDocument = findOne(longestSubstringMap.get(d), d);
+             System.out.println(resultForDocument + "->" + longestSubstringMap.get(d));
+         }
+         
+        // System.out.println("largest substring found in GST:" + max);
+        // Substring.shouldRepr = false;
+        // Result result = this.findAll(new String(Arrays.copyOfRange(max.getText(),
+        // max.getBegin(), max.getEnd()+1)), true);
+        // System.out.println(result);
         return null;
     }
 }
