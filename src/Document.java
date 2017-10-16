@@ -27,15 +27,16 @@ public class Document {
 
     @Override
     public String toString() {
-        String op = "DOCUMENT++Title: [" + this.title + "], Text: [" + this.text.substring(0, 20 > this.text.length()? this.text.length() : 10) + "...]++";
+        String op = "DOCUMENT++Title: [" + this.title + "], Text: ["
+                + this.text.substring(0, 20 > this.text.length() ? this.text.length() : 10) + "...]++";
         return op;
     }
 
     public String toString(int ind, int len) {
         int padding = 10;
         int before = (ind - padding) < 0 ? 0 : (ind - padding);
-        int after = (ind + padding + len) > this.text.length() ? this.text.length() : (ind + padding + len); 
-        String op = "Title: [" + this.title + "] \n Text: [" + this.text.substring(before, after)+ "]";
+        int after = (ind + padding + len) > this.text.length() ? this.text.length() : (ind + padding + len);
+        String op = "Title: [" + this.title + "] \n Text: [" + this.text.substring(before, after) + "]";
         return op;
     }
 

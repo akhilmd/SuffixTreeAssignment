@@ -7,9 +7,6 @@ import java.util.Scanner;
 
 public class Parser {
     public static List<Document> parse(Path path) throws IOException {
-        // System.out.println("Reading file: " + args[0]);
-        // Path path = Paths.get(args[0]);
-        
         List<Document> documents = new ArrayList<Document>();
 
         try (Scanner scanner = new Scanner(path, StandardCharsets.UTF_8.name())) {
@@ -18,28 +15,33 @@ public class Parser {
             String text = "";
             String line = null;
             int nlc = 0;
-            while(true) {
+            while (true) {
                 text = "";
                 nlc = 0;
+
+                // Read title
                 if (scanner.hasNextLine()) {
                     title = scanner.nextLine().trim();
-                    // System.out.println("{"+title+"}");
-                } else break;
+                } else
+                    break;
+
+                // Read empty line after title
                 scanner.nextLine();
-                while (nlc<2 && scanner.hasNextLine()) {
+
+                // while there are no consecutive new lines, read the text
+                while (nlc < 2 && scanner.hasNextLine()) {
                     line = scanner.nextLine().trim();
-                    
+
                     if (line.equals("")) {
                         ++nlc;
                     } else {
                         nlc = 0;
                     }
-                    
+
                     text += " " + line;
-                    //System.out.println("["+line+"]");
                 }
-                //System.out.println("XXXXXXXXXXXXXXXXXXXXXXXX");
-                // System.out.println(new Document(title, text.trim()));
+
+                // Create new document and add to list
                 documents.add(new Document(title, text.trim(), i));
                 ++i;
             }

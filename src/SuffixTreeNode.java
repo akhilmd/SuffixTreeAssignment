@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,14 +7,23 @@ public class SuffixTreeNode {
     protected Substring substring = null;
     protected SuffixTreeNode[] children = null;
     protected Map<Document, SuffixTreeLeafNode> firstOccurrencesMap = null;
+    protected List<SuffixTreeLeafNode> descendants = null;
 
-    public SuffixTreeNode (int letterDepth, Substring substringRange) {
+    public SuffixTreeNode(int letterDepth, Substring substringRange) {
         this.letterDepth = letterDepth;
         this.substring = substringRange;
 
         // All will be null
         this.children = new SuffixTreeNode[128];
         this.firstOccurrencesMap = new HashMap<Document, SuffixTreeLeafNode>();
+    }
+
+    public List<SuffixTreeLeafNode> getDescendants() {
+        return descendants;
+    }
+
+    public void setDescendants(List<SuffixTreeLeafNode> descendants) {
+        this.descendants = descendants;
     }
 
     public int getLetterDepth() {
@@ -79,14 +87,14 @@ public class SuffixTreeNode {
 
     @Override
     public String toString() {
-        String op = "["+this.letterDepth+", "+this.substring+", {";
+        String op = "[" + this.letterDepth + ", " + this.substring + ", {";
         String childrenStr = "";
-        for (int i=0;i<this.children.length;++i) {
+        for (int i = 0; i < this.children.length; ++i) {
             if (this.children[i] != null) {
                 if (i == 0) {
                     i = '$';
                 }
-                childrenStr += "'"+(char)i+"', ";
+                childrenStr += "'" + (char) i + "', ";
             }
         }
         childrenStr = childrenStr.trim();
@@ -95,7 +103,7 @@ public class SuffixTreeNode {
         }
         op = op.trim();
         op += childrenStr;
-        if(op.endsWith(",")) {
+        if (op.endsWith(",")) {
             op = op.substring(0, op.length() - 1);
         }
 

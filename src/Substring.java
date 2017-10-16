@@ -43,13 +43,13 @@ public class Substring {
             if (ch == 0) {
                 ch = '$';
             }
-            op += (char)ch;
+            op += (char) ch;
         }
         String repr = "";
         if (shouldRepr) {
-            repr =  " = \""+op+"\"";
+            repr = " = \"" + op + "\"";
         }
-        return "[(" + this.begin + ", " + this.end + ")"+repr+"]";
+        return "[(" + this.begin + ", " + this.end + ")" + repr + "]";
     }
 
     public byte[] getText() {
